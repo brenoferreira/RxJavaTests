@@ -3,7 +3,6 @@ package RxTests
 import rx.{Observable, Observer}
 import rx.operators.OperationInterval
 import java.util.concurrent.TimeUnit
-import rx.subscriptions.{BooleanSubscription, Subscriptions}
 import rx.concurrency.Schedulers
 
 class RxTests{
