@@ -12,7 +12,7 @@ import rx.{Observable, Observer}
 import rx.subjects.{Subject, ReplaySubject}
 
 case class Token(val pedido:String, val token:Int)
-case class Bebida(val nome:String, token:Token)
+case class Bebida(val nome:String, token:Int)
 
 class Caixa {
 
@@ -31,10 +31,10 @@ class Caixa {
 
 class Cliente() {
 
-  var token:Token = null
+  var token:Int = 0
 
   def fazerPedido(pedido:String, caixa:Caixa) = {
-    token = caixa.registrarPedido(pedido)
+    token = caixa.registrarPedido(pedido).token
   }
 
   def esperarPedido(barista:Barista) = {
@@ -54,6 +54,6 @@ class Barista(val caixa:Caixa) {
   def fazerCafe(token:Token) = {
     Thread.sleep(2000)
 
-    subject.onNext(new Bebida(token.pedido, token))
+    subject.onNext(new Bebida(token.pedido, token.token))
   }
 }
