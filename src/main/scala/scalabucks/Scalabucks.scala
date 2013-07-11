@@ -8,11 +8,26 @@ package scalabucks
  * To change this template use File | Settings | File Templates.
  */
 
-import rx.{Observable, Observer}
-import rx.subjects.{Subject, ReplaySubject}
+import rx.{Observable}
+import rx.subjects.{ReplaySubject}
 
 case class Token(val pedido:String, val token:Int)
 case class Bebida(val nome:String, token:Int)
+
+class Scalabucks(caixa:Caixa) {
+
+  private var barista:Barista = null
+
+  def registrarPedido(pedido:String) = {
+    caixa.registrarPedido(pedido)
+  }
+
+  def setBarista(barista:Barista) = this.barista = barista
+
+  def observarPedidosFeitos = caixa.observar
+
+  def observarPedidosProntos = barista.observar
+}
 
 class Caixa {
 
@@ -29,25 +44,27 @@ class Caixa {
   }
 }
 
-class Cliente() {
-
+class Cliente(scalabucks:Scalabucks) {
   var token:Int = 0
 
-  def fazerPedido(pedido:String, caixa:Caixa) = {
-    token = caixa.registrarPedido(pedido).token
+  def fazerPedido(pedido:String) = {
+    token = scalabucks.registrarPedido(pedido).token
   }
 
   def esperarPedido(barista:Barista) = {
-    barista.observar
+    scalabucks
+      .observarPedidosProntos
       .filter((bebida:Bebida) => bebida.token == token)
       .subscribe((bebida:Bebida) => println("bebendo " + bebida.nome))
   }
 }
 
-class Barista(val caixa:Caixa) {
+class Barista(val scalabucks:Scalabucks) {
   val subject = ReplaySubject.create[Bebida]()
 
-  caixa.observar.subscribe((token:Token) => fazerCafe(token))
+  scalabucks
+    .observarPedidosFeitos
+    .subscribe((token:Token) => fazerCafe(token))
 
   def observar:Observable[Bebida] = subject
 

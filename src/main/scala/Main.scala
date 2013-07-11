@@ -1,6 +1,6 @@
 package RxTests
 
-import scalabucks.{Cliente, Barista, Caixa}
+import scalabucks.{Scalabucks, Cliente, Barista, Caixa}
 
 object Main{
   def main(args: Array[String]) {
@@ -8,14 +8,18 @@ object Main{
 //    rxTests.calc
 
     val caixa = new Caixa
-    val barista = new Barista(caixa)
-    val cliente = new Cliente
-    val cliente2 = new Cliente
+    val scalabucks = new Scalabucks(caixa)
 
-    cliente.fazerPedido("Expresso", caixa)
+    val barista = new Barista(scalabucks)
+    scalabucks.setBarista(barista)
+
+    val cliente = new Cliente(scalabucks)
+    val cliente2 = new Cliente(scalabucks)
+
+    cliente.fazerPedido("Expresso")
     cliente.esperarPedido(barista)
 
-    cliente2.fazerPedido("Capuccino", caixa)
+    cliente2.fazerPedido("Capuccino")
     cliente2.esperarPedido(barista)
   }
 }
